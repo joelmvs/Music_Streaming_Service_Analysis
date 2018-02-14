@@ -1,0 +1,361 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf200
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 library(twitteR)\
+library(tm)\
+library(syuzhet)\
+library(tidyverse)\
+\
+#get Twitter Authorization\
+setup_twitter_oauth(consumer_key,consumer_secret,access_token,access_secret)\
+\
+#the inputs for the twitter authorization are variables that contain certain access codes that were given to me by twitter)\
+#I included a separate picture of the content\
+\
+#Search tweets with the coreesponding key words to create the sentiment table\
+some_tweets<-searchTwitter("Apple Music", n=3000,lang = "en")\
+some_tweets1<-searchTwitter("Spotify",n=3000,lang = "en")\
+some_tweets2<-searchTwitter("SoundCloud",n=3000,lang = "en")\
+\
+\
+#Clean Tweets\
+\
+# get the text\
+some_txt = sapply(some_tweets, function(x) x$getText())\
+# remove retweet entities\
+some_txt = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt)\
+# remove at people\
+some_txt = gsub('@\\\\w+', '', some_txt)\
+# remove punctuation\
+some_txt = gsub('[[:punct:]]', '', some_txt)\
+# remove numbers\
+some_txt = gsub('[[:digit:]]', '', some_txt)\
+# remove html links\
+some_txt = gsub('http\\\\w+', '', some_txt)\
+# remove unnecessary spaces\
+some_txt = gsub('[ \\t]\{2,\}', '', some_txt)\
+some_txt = gsub('^\\\\s+|\\\\s+$', '', some_txt)\
+\
+# get the text\
+some_txt1 = sapply(some_tweets1, function(x) x$getText())\
+# remove retweet entities\
+some_txt1 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt1)\
+# remove at people\
+some_txt1 = gsub('@\\\\w+', '', some_txt1)\
+# remove punctuation\
+some_txt1 = gsub('[[:punct:]]', '', some_txt1)\
+# remove numbers\
+some_txt1 = gsub('[[:digit:]]', '', some_txt1)\
+# remove html links\
+some_txt1 = gsub('http\\\\w+', '', some_txt1)\
+# remove unnecessary spaces\
+some_txt1 = gsub('[ \\t]\{2,\}', '', some_txt1)\
+some_txt1 = gsub('^\\\\s+|\\\\s+$', '', some_txt1)\
+\
+# get the text\
+some_txt2 = sapply(some_tweets2, function(x) x$getText())\
+# remove retweet entities\
+some_txt2 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt2)\
+# remove at people\
+some_txt2 = gsub('@\\\\w+', '', some_txt2)\
+# remove punctuation\
+some_txt2 = gsub('[[:punct:]]', '', some_txt2)\
+# remove numbers\
+some_txt2 = gsub('[[:digit:]]', '', some_txt2)\
+# remove html links\
+some_txt2 = gsub('http\\\\w+', '', some_txt2)\
+# remove unnecessary spaces\
+some_txt2 = gsub('[ \\t]\{2,\}', '', some_txt2)\
+some_txt2 = gsub('^\\\\s+|\\\\s+$', '', some_txt2)\
+\
+#get tokens\
+sometxt<-get_tokens(sometxt)\
+sometxt1<-get_tokens(sometxt1)\
+sometxt2<-get_tokens(sometxt2)\
+\
+#turn into data frame so that you can use rbind\
+sometxt<-as.data.frame(sometxt)\
+sometxt1<-as.data.frame(sometxt1)\
+sometxt2<-as.data.frame(sometxt2)\
+\
+#change the name so they can be combined\
+names(sometxt)<-"token"\
+names(sometxt1)<-"token"\
+names(sometxt2)<-"token"\
+\
+#use rbind to make into one dataframe\
+alltokens<-rbind(sometxt,some_txt1)\
+alltokens<-rbind(alltokens,sometxt2)\
+\
+#add an empty category\
+alltokens$category<-"None"\
+\
+#write a csv file to edit the data more\
+write_csv<-(alltokens, file="alltokens.csv")\
+\
+#manually edit the csv and enter "satisfied" or "unsatisfied"\
+\
+#read csv into a different object\
+AllTokens<-read.csv("alltokens.csv")\
+\
+#now get test group to determine whether tweets are unsatified or satisfied\
+some_tweets3<-searchTwitter("Apple Music", n=300,lang = "en")\
+some_tweets4<-searchTwitter("Spotify",n=300,lang = "en")\
+some_tweets5<-searchTwitter("SoundCloud",n=300,lang = "en")\
+some_tweets6<-searchTwitter("Apple Music", n=300,lang = "en")\
+some_tweets7<-searchTwitter("Spotify",n=300,lang = "en")\
+some_tweets8<-searchTwitter("SoundCloud",n=300,lang = "en")\
+some_tweets9<-searchTwitter("Apple Music", n=300,lang = "en")\
+some_tweets10<-searchTwitter("Spotify",n=300,lang = "en")\
+some_tweets11<-searchTwitter("SoundCloud",n=300,lang = "en")\
+\
+#clean them up\
+\
+# get the text\
+some_txt3 = sapply(some_tweets3, function(x) x$getText())\
+# remove retweet entities\
+some_txt3 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt3)\
+# remove at people\
+some_txt3 = gsub('@\\\\w+', '', some_txt3)\
+# remove punctuation\
+some_txt3 = gsub('[[:punct:]]', '', some_txt3)\
+# remove numbers\
+some_txt3 = gsub('[[:digit:]]', '', some_txt3)\
+# remove html links\
+some_txt3 = gsub('http\\\\w+', '', some_txt3)\
+# remove unnecessary spaces\
+some_txt3 = gsub('[ \\t]\{2,\}', '', some_txt3)\
+some_txt3 = gsub('^\\\\s+|\\\\s+$', '', some_txt3)\
+\
+# get the text\
+some_txt4 = sapply(some_tweets4, function(x) x$getText())\
+# remove retweet entities\
+some_txt4 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt4)\
+# remove at people\
+some_txt4 = gsub('@\\\\w+', '', some_txt4)\
+# remove punctuation\
+some_txt4 = gsub('[[:punct:]]', '', some_txt4)\
+# remove numbers\
+some_txt4 = gsub('[[:digit:]]', '', some_txt4)\
+# remove html links\
+some_txt4 = gsub('http\\\\w+', '', some_txt4)\
+# remove unnecessary spaces\
+some_txt4 = gsub('[ \\t]\{2,\}', '', some_txt4)\
+some_txt4 = gsub('^\\\\s+|\\\\s+$', '', some_txt4)\
+\
+\
+some_txt5 = sapply(some_tweets5, function(x) x$getText())\
+some_txt5 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt5)\
+some_txt5 = gsub('@\\\\w+', '', some_txt5)\
+some_txt5 = gsub('[[:punct:]]', '', some_txt5)\
+some_txt5 = gsub('[[:digit:]]', '', some_txt5)\
+some_txt5 = gsub('http\\\\w+', '', some_txt5)\
+some_txt5 = gsub('[ \\t]\{2,\}', '', some_txt5)\
+some_txt5 = gsub('^\\\\s+|\\\\s+$', '', some_txt5)\
+\
+some_txt6 = sapply(some_tweets6, function(x) x$getText())\
+some_txt6 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt6)\
+some_txt6 = gsub('@\\\\w+', '', some_txt6)\
+some_txt6 = gsub('[[:punct:]]', '', some_txt6)\
+some_txt6 = gsub('[[:digit:]]', '', some_txt6)\
+some_txt6 = gsub('http\\\\w+', '', some_txt6)\
+some_txt6 = gsub('[ \\t]\{2,\}', '', some_txt6)\
+some_txt6 = gsub('^\\\\s+|\\\\s+$', '', some_txt6)\
+\
+some_txt7 = sapply(some_tweets7, function(x) x$getText())\
+some_txt7 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt7)\
+some_txt7 = gsub('@\\\\w+', '', some_txt7)\
+some_txt7 = gsub('[[:punct:]]', '', some_txt7)\
+some_txt7 = gsub('[[:digit:]]', '', some_txt7)\
+some_txt7 = gsub('http\\\\w+', '', some_txt7)\
+some_txt7 = gsub('[ \\t]\{2,\}', '', some_txt7)\
+some_txt7 = gsub('^\\\\s+|\\\\s+$', '', some_txt7)\
+\
+some_txt8 = sapply(some_tweets8, function(x) x$getText())\
+some_txt8 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt8)\
+some_txt8 = gsub('@\\\\w+', '', some_txt8)\
+some_txt8 = gsub('[[:punct:]]', '', some_txt8)\
+some_txt8 = gsub('[[:digit:]]', '', some_txt8)\
+some_txt8 = gsub('http\\\\w+', '', some_txt8)\
+some_txt8 = gsub('[ \\t]\{2,\}', '', some_txt8)\
+some_txt8 = gsub('^\\\\s+|\\\\s+$', '', some_txt8)\
+\
+some_txt9 = sapply(some_tweets9, function(x) x$getText())\
+some_txt9 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt9)\
+some_txt9 = gsub('@\\\\w+', '', some_txt9)\
+some_txt9 = gsub('[[:punct:]]', '', some_txt9)\
+some_txt9 = gsub('[[:digit:]]', '', some_txt9)\
+some_txt9 = gsub('http\\\\w+', '', some_txt9)\
+some_txt9 = gsub('[ \\t]\{2,\}', '', some_txt9)\
+some_txt9 = gsub('^\\\\s+|\\\\s+$', '', some_txt9)\
+\
+some_txt10 = sapply(some_tweets10, function(x) x$getText())\
+some_txt10 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt10)\
+some_txt10 = gsub('@\\\\w+', '', some_txt10)\
+some_txt10 = gsub('[[:punct:]]', '', some_txt10)\
+some_txt10 = gsub('[[:digit:]]', '', some_txt10)\
+some_txt10 = gsub('http\\\\w+', '', some_txt10)\
+some_txt10 = gsub('[ \\t]\{2,\}', '', some_txt10)\
+some_txt10 = gsub('^\\\\s+|\\\\s+$', '', some_txt10)\
+\
+some_txt11 = sapply(some_tweets11, function(x) x$getText())\
+some_txt11 = gsub('(RT|via)((?:\\\\b\\\\W*@\\\\w+)+)', '', some_txt11)\
+some_txt11 = gsub('@\\\\w+', '', some_txt11)\
+some_txt11 = gsub('[[:punct:]]', '', some_txt11)\
+some_txt11 = gsub('[[:digit:]]', '', some_txt11)\
+some_txt11 = gsub('http\\\\w+', '', some_txt11)\
+some_txt11 = gsub('[ \\t]\{2,\}', '', some_txt11)\
+some_txt11 = gsub('^\\\\s+|\\\\s+$', '', some_txt11)\
+\
+\
+#get tokens again\
+sometxt3<-get_tokens(sometxt3)\
+sometxt4<-get_tokens(sometxt4)\
+sometxt5<-get_tokens(sometxt5)\
+sometxt6<-get_tokens(sometxt6)\
+sometxt7<-get_tokens(sometxt7)\
+sometxt8<-get_tokens(sometxt8)\
+sometxt9<-get_tokens(sometxt9)\
+sometxt10<-get_tokens(sometxt10)\
+sometxt11<-get_tokens(sometxt11)\
+\
+#turn into data frame so that you can use rbind and get count and use inner_join\
+sometxt3<-as.data.frame(sometxt3)\
+sometxt4<-as.data.frame(sometxt4)\
+sometxt5<-as.data.frame(sometxt5)\
+sometxt6<-as.data.frame(sometxt6)\
+sometxt7<-as.data.frame(sometxt7)\
+sometxt8<-as.data.frame(sometxt8)\
+sometxt9<-as.data.frame(sometxt9)\
+sometxt10<-as.data.frame(sometxt10)\
+sometxt11<-as.data.frame(sometxt11)\
+\
+#change the name so they can be combined\
+names(sometxt3)<-"token"\
+names(sometxt4)<-"token"\
+names(sometxt5)<-"token"\
+names(sometxt6)<-"token"\
+names(sometxt7)<-"token"\
+names(sometxt8)<-"token"\
+names(sometxt9)<-"token"\
+names(sometxt10)<-"token"\
+names(sometxt11)<-"token"\
+\
+#get the counts for satisfied and unsatisfied\
+ZO<-count(inner_join(alltokens,sometext3),category)\
+ZO1<-count(inner_join(alltokens,sometext4),category)\
+ZO2<-count(inner_join(alltokens,sometext5),category)\
+ZO3<-count(inner_join(alltokens,sometext6),category)\
+ZO4<-count(inner_join(alltokens,sometext7),category)\
+ZO5<-count(inner_join(alltokens,sometext8),category)\
+ZO6<-count(inner_join(alltokens,sometext9),category)\
+ZO7<-count(inner_join(alltokens,sometext10),category)\
+ZO8<-count(inner_join(alltokens,sometext11),category)\
+\
+#Turn ZO into a list\
+ZOlist<-list(ZO)\
+ZO1list<-list(ZO1)\
+ZO2list<-list(ZO2)\
+ZO3list<-list(ZO3)\
+ZO4list<-list(ZO4)\
+ZO5list<-list(ZO5)\
+ZO6list<-list(ZO6)\
+ZO7list<-list(ZO7)\
+ZO8list<-list(ZO8)\
+\
+#sum of each unsatisfied and unsatisfied to normalize data\
+ZOsum<-sum(as.data.frame(ZOlist)$n)\
+ZOsum1<-sum(as.data.frame(ZO1list)$n)\
+ZOsum2<-sum(as.data.frame(ZO2list)$n)\
+ZOsum3<-sum(as.data.frame(ZO3list)$n)\
+ZOsum4<-sum(as.data.frame(ZO4list)$n)\
+ZOsum5<-sum(as.data.frame(ZO5list)$n)\
+ZOsum6<-sum(as.data.frame(ZO6list)$n)\
+ZOsum7<-sum(as.data.frame(ZO7list)$n)\
+ZOsum8<-sum(as.data.frame(ZO8list)$n)\
+\
+#normalize between 1 and 0\
+Satisfied<-Z0$n[1]/ZOsum\
+Unsatisfied<-ZO$n[2]/ZOsum\
+Satisfied1<-Z01$n[1]/ZOsum1\
+Unsatisfied1<-ZO1$n[2]/ZOsum1\
+Satisfied2<-Z02$n[1]/ZOsum2\
+Unsatisfied2<-ZO2$n[2]/ZOsum2\
+Satisfied3<-Z03$n[1]/ZOsum3\
+Unsatisfied3<-ZO3$n[2]/ZOsum3\
+Satisfied4<-Z04$n[1]/ZOsum4\
+Unsatisfied4<-ZO4$n[2]/ZOsum4\
+Satisfied5<-Z05$n[1]/ZOsum5\
+Unsatisfied5<-ZO5$n[2]/ZOsum5\
+Satisfied6<-Z06$n[1]/ZOsum6\
+Unsatisfied6<-ZO6$n[2]/ZOsum6\
+Satisfied7<-Z07$n[1]/ZOsum7\
+Unsatisfied7<-ZO7$n[2]/ZOsum7\
+Satisfied8<-Z08$n[1]/ZOsum8\
+Unsatisfied8<-ZO8$n[2]/ZOsum8\
+\
+#put each corresponding unsatisfied and satisfied in a dataframe\
+DF<-as.data.frame(Unsatisfied,Satisfied)\
+DF1<-as.data.frame(Unsatisfied1,Satisfied1)\
+DF2<-as.data.frame(Unsatisfied2,Satisfied2)\
+DF3<-as.data.frame(Unsatisfied3,Satisfied3)\
+DF4<-as.data.frame(Unsatisfied4,Satisfied4)\
+DF5<-as.data.frame(Unsatisfied5,Satisfied5)\
+DF6<-as.data.frame(Unsatisfied6,Satisfied6)\
+DF7<-as.data.frame(Unsatisfied7,Satisfied7)\
+DF8<-as.data.frame(Unsatisfied8,Satisfied8)\
+\
+#change the name so you can use rbind\
+names(DF)<-c("unsatisfied","satisfied")\
+names(DF1)<-c("unsatisfied","satisfied")\
+names(DF2)<-c("unsatisfied","satisfied")\
+names(DF3)<-c("unsatisfied","satisfied")\
+names(DF4)<-c("unsatisfied","satisfied")\
+names(DF5)<-c("unsatisfied","satisfied")\
+names(DF6)<-c("unsatisfied","satisfied")\
+names(DF7)<-c("unsatisfied","satisfied")\
+names(DF8)<-c("unsatisfied","satisfied")\
+\
+#create new complete dataframe\
+satisfactiondataframe<-rbind(DF,DF1)\
+satisfactiondataframe<-rbind(satisfactiondataframe,DF2)\
+satisfactiondataframe<-rbind(satisfactiondataframe,DF3)\
+satisfactiondataframe<-rbind(satisfactiondataframe,DF4)\
+satisfactiondataframe<-rbind(satisfactiondataframe,DF5)\
+satisfactiondataframe<-rbind(satisfactiondataframe,DF6)\
+satisfactiondataframe<-rbind(satisfactiondataframe,DF7)\
+satisfactiondataframe<-rbind(satisfactiondataframe,DF8)\
+\
+#add new columns for nn\
+\
+satisfactiondataframe$nnunsatisfied<-0\
+satisfactiondataframe$nnsatisfied<-0\
+\
+#pick a few to be satisfied or unsatisfied\
+satisfactiondataframe[c(1,6),]<-1\
+\
+library(neuralnet)\
+\
+#create trainset\
+Trainset<-satisfactiondataframe[c(1,6)]\
+\
+#create formula for nn\
+johnf<-formula(nnunsatisfied+nnsatisfied~Unsatisfied+Satisfied)\
+\
+#create nn\
+nn1<-neuralnet(johnf,data = Trainset,linear.output=FALSE,hidden=c(2,2))\
+\
+#plot the nn\
+plot(nn,rep='best')\
+\
+#take out the traning set\
+without<-satisfactiondataframe[-c(1,6),-c(4,5)]\
+\
+#compute results\
+results<-compute(nn,without)\
+\
+}
